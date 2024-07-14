@@ -1,1 +1,96 @@
+############## The number of customer who have churned ##############
+
+select customerstatus,count(customerstatus) as totalnumber
+from customerstatus
+group by customerstatus;
+
+
+############## The contract with respect to chunred customers###########
+
+select c.contract ,count(c.customerid) as totalcount
+from customerservice3 c
+join customerstatus1 cs on cs.customerid=c.customerid 
+where customerstatus='Churned'
+group by contract;
+
+############# Top 10 cities with highest churn
+
+
+with cte1 as 
+(select lp.customerid,lp.city,lp.state,lp.zipcode,cs.churnscore,cs.churncategory,cs.churnreason,cs.cltv_range
+from customerstatus1 cs
+left join locationpoplulation lp on lp.customerid=cs.customerid
+where customerstatus='churned'),
+
+cte2 as 
+(select zipcode,count(customerid) as totalcount,churncategory
+from cte1
+group by zipcode,churncategory
+order by totalcount DESC)
+
+select distinct  c.zipcode,c.totalcount,c.churncategory, lp.city,lp.population
+from cte2 c
+left join locationpoplulation lp on c.zipcode=lp.zipcode
+order by c.totalcount DESC
+limit 10;
+
+############# Statisfaction score given by churned cusotmers for various churn reasons###########
+
+select churnreason,count(customerid) as totalcount
+from customerstatus1
+where customerstatus='Churned' and statisfactionscore in (1,2)
+group by churnreason
+order by totalcount DESC;
+
+
+################### The type of Internet selected by churned customers and the average data downloaded with respect to each category 
+
+select internettype ,count(c.customerid) as total_count, avg(avgmonthlygbdownload) as total_averager
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid
+where cs.customerstatus='Churned'
+group by internettype;
+
+
+##########################Churned customers who have opted online security and how statisfied they were with the service ###########
+
+select c.onlinesecurity,count(c.customerid) as total_count,cs.statisfactionscore
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid 
+where customerstatus='Churned'
+group by c.onlinesecurity ,cs.statisfactionscore
+order by c.onlinesecurity DESC;
+
+#######################Churend customers who have opted for Internet service and how statisfied they were with the service ###########
+
+select c.internetservice,count(c.customerid) as total_count,cs.statisfactionscore
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid 
+where customerstatus='Churned'
+group by c.internetservice ,cs.statisfactionscore
+order by c.internetservice DESC ;
+
+####################### Churned custoemrs who have opted for Phone service and how statisfied they were with the service ################
+
+select c.phoneservice,count(c.customerid) as total_count,cs.statisfactionscore
+from customerservice1 c
+join customerstatus1 cs on c.customerid=cs.customerid 
+where customerstatus='Churned'
+group by  c.phoneservice ,cs.statisfactionscore
+order by  c.phoneservice DESC ;
+
+
+
+
+
+################# The tenure of the churend customers#############
+
+
+select tenureinmonths,count(c.customerid) as totalnumber
+from customerservice1 c
+join customerstatus1 cs on c.customerid=cs.customerid
+where customerstatus='Churned'
+group by tenureinmonths
+order by  tenureinmonths;
+
 
