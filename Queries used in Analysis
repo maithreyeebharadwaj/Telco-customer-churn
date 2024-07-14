@@ -1,1 +1,1248 @@
 
+alter table customerdemographics 
+rename column Under30 to Ages;
+
+alter table customerdemographics
+rename column Age to Under30;
+
+alter table customerdemographics
+rename column Ages to Age;
+
+### Customers under the age 30.#########################
+SELECT 
+    COUNT(CustomerID)
+FROM
+    customerdemographics
+WHERE
+    Under30 = 'Yes';
+
+### Average age of the customer#################
+
+SELECT 
+    AVG(age)
+FROM
+    customerdemographics;
+
+### How many customers are SeniorCitizens#################
+
+SELECT 
+    COUNT(CustomerID) 
+FROM
+    customerdemographics
+WHERE
+    SeniorCitizen = 'Yes';
+   
+   
+   ####### Number of Customers who are not under30 and who are not senior citizens########################
+
+    SELECT 
+    COUNT(customerid)
+FROM
+    customerdemographics
+WHERE
+    Under30 = 'No' AND SeniorCitizen = 'No';
+    
+#### Total number of male and female customers#############################
+
+SELECT 
+    Gender, COUNT(CustomerID) AS TotalNumber
+FROM
+    customerdemographics
+GROUP BY Gender;
+
+##########Total number of male and femlae customers under 30######################
+
+SELECT 
+    gender, COUNT(CustomerID) AS totalnumber
+FROM
+    customerdemographics
+WHERE
+    under30 = 'Yes'
+GROUP BY gender;
+
+######################Total number of male and femlae customers who are SeniorCitizens##############################
+
+SELECT 
+    gender, COUNT(CustomerID) AS totalnumber
+FROM
+    customerdemographics
+WHERE
+   SeniorCitizen = 'Yes'
+GROUP BY gender;
+
+#############Total number of customer of male and female customers who are neither under30 nor senior citizens.########################
+
+SELECT 
+    gender, COUNT(CustomerID) AS totalnumber
+FROM
+    customerdemographics
+WHERE
+   SeniorCitizen = 'No' and Under30='No'
+GROUP BY gender;
+
+
+#############Total number of Customers who are married########################### 
+
+SELECT 
+    COUNT(customerid)
+FROM
+    customerdemographics
+WHERE
+    married = 'yes';
+
+##############Number of Male and Female Customers who are married##################### 
+
+SELECT 
+    Gender, COUNT(CustomerID) AS TotalNumber
+FROM
+    customerdemographics
+WHERE
+    married = 'Yes'
+GROUP BY Gender;
+
+
+#########Number of male and female customers under 30 and married################### 
+
+SELECT 
+    Gender, COUNT(CustomerID) AS TotalNumber
+FROM
+    customerdemographics
+WHERE
+    married = 'Yes' and Under30='Yes'
+GROUP BY Gender;
+
+
+#############Number of male and female customers who are Seniorcitizen and married###################### 
+
+SELECT 
+    Gender, COUNT(CustomerID) AS TotalNumber
+FROM
+    customerdemographics
+WHERE
+    married = 'No' and SeniorCitizen='Yes'
+GROUP BY Gender;
+
+
+#############Number of Male and Female custoemrs who ae neither under30 or senior Citizens and are not married##################### 
+
+SELECT 
+    gender, COUNT(CustomerID) AS totalnumber
+FROM
+    customerdemographics
+WHERE
+   SeniorCitizen = 'No' and Under30='No' and Married='Yes'
+GROUP BY gender;
+
+################Total number of customer who have dependents################# 
+
+SELECT 
+    gender ,COUNT(customerid)
+FROM
+    customerdemographics
+WHERE
+    Dependents = 'Yes';
+#########Number of customers who have dependents and are married###################### 
+
+SELECT 
+    COUNT(customerid)
+FROM
+    customerdemographics
+WHERE
+    Dependents = 'Yes' and Married='Yes';
+    
+    
+    #######Number of Customers who are who have dependents and are not married#################### 
+    
+    SELECT 
+    COUNT(customerid)
+FROM
+    customerdemographics
+WHERE
+    Dependents = 'Yes' and Married='No';
+    
+    
+  ### Number of customer who are under30 and are married and have dependents
+
+
+ SELECT 
+ COUNT(customerid)
+FROM
+    customerdemographics
+WHERE
+    Dependents = 'Yes' and Married='Yes' and Under30='Yes' and SeniorCitizen='No';
+    
+    
+    ###### Number of customer who are SeniorCitizen and are married and have dependents
+    
+     SELECT 
+gender, COUNT(customerid)
+FROM
+    customerdemographics
+WHERE
+    Dependents = 'Yes' and Married='Yes' and Under30='No' and SeniorCitizen='Yes'
+    group by gender;
+
+
+#### The number of dependents where customers are married and have dependents and the no of dependents is greater than 5.
+
+select gender,count(customerid)
+from customerdemographics
+where dependents='Yes' and Married='Yes' and NumberOfDependents>=5
+group by gender;
+
+
+#### The number of dependents where customers are married and have dependents and the no of dependents is less than 5.
+select gender,count(customerid)
+from customerdemographics
+where dependents='Yes' and Married='Yes' and NumberOfDependents<5
+group by gender;
+
+#### The number of dependents where customers are not  married and have dependents and the no of dependents is greater than 5.
+
+
+select gender , count(*)
+from customerdemographics
+where dependents='Yes' and Married='No' and NumberOfDependents>=5
+group by gender;
+
+
+#### The number of dependents where customers are not  married and have dependents and the no of dependents is less than 5.
+select gender , count(*)
+from customerdemographics
+where dependents='Yes' and Married='No' and NumberOfDependents<5
+group by gender;
+
+####### Sum of the number of dependents
+
+select sum(NumberOfDependents)
+from customerdemographics;
+
+
+### Avg of the number of dependents 
+
+select avg(NumberOfDependents)
+from customerdemographics; 
+
+
+####### Max and min number of dependents 
+
+
+select max(NumberOfDependents) 
+from customerdemographics ;
+
+
+######################################################################## END OF CUSTOMER DEMEOGRAPHICS #######################################################################
+
+
+
+#############Exploring customer population and customer location
+
+select * from customerlocation;
+
+
+### Top 5 citites where most customers are located
+
+
+select city,count(customerid) as totalnumber
+from customerlocation
+group by city
+order by totalnumber DESC;
+
+
+
+### Top 5 citites with the least customers
+
+select city,count(customerid) as totalnumber
+from customerlocation
+group by city
+order by totalnumber 
+limit 10;
+
+######## The number of customers with respect to zipcodes
+
+select zipcode,count(customerid) as totalnumber
+from customerlocation
+group by zipcode
+order by totalnumber DESC;
+
+
+
+##### The number of customers with respect to zipcode and the city asscoaited with that zipcode and in decreasing order
+with zipcode as
+(select zipcode,count(customerid) as totalnumber
+from customerlocation
+group by zipcode)
+
+select distinct z.zipcode,c.city,z.totalnumber
+from  zipcode z
+inner join customerlocation c on z.zipcode=c.zipcode
+order by z.totalnumber desc
+limit 5;
+
+##### The number of customers with respect to zipcode and the city asscoaited with that zipcode and in ascending order
+
+
+with zipcode as
+(select zipcode,count(customerid) as totalnumber
+from customerlocation
+group by zipcode)
+
+select distinct z.zipcode,c.city,z.totalnumber
+from  zipcode z
+inner join customerlocation c on z.zipcode=c.zipcode
+order by z.totalnumber 
+limit 5;
+
+
+select * from customerpopulation;
+
+###### Join the customer location and customer poplulation table
+select *
+from customerlocation cl
+left join customerpopulation cp on cl.zipcode=cp.zipcode;
+
+
+create view locationpoplulation as 
+select cl.customerID,cl.state,cl.city,cl.zipcode,cp.population
+from customerlocation cl ,customerpopulation cp
+where  cl.zipcode = cp.zipcode;
+
+
+select * from locationpoplulation;
+
+#### Find the city with the most poulation with respect to zipcode and no of customers associated with it. 
+
+with cte as
+(select distinct zipcode,population,city
+from locationpoplulation
+order by population 
+),
+
+cte2 as 
+ (select zipcode ,count(customerid) as totalnumber
+from locationpoplulation
+group by zipcode)
+
+
+select c1.zipcode,c1.population,c1.city,c2.totalnumber
+from cte c1
+left join cte2 c2 on c1.zipcode=c2.zipcode
+order by population DESC
+limit 10;
+
+#####Find the city with the least poulation with respect to zipcode and no of customers associated with it.
+
+with cte as
+(select distinct zipcode,population,city
+from locationpoplulation
+order by population 
+),
+
+cte2 as 
+ (select zipcode ,count(customerid) as totalnumber
+from locationpoplulation
+group by zipcode)
+
+
+select c1.zipcode,c1.population,c1.city,c2.totalnumber
+from cte c1
+left join cte2 c2 on c1.zipcode=c2.zipcode
+order by population 
+limit 10;
+
+
+
+######### The most number of customers present in each zipcode and the poplulation with respect to that zipcode
+
+with cte as
+(select distinct zipcode,population,city
+from locationpoplulation
+order by population 
+),
+
+cte2 as 
+ (select zipcode ,count(customerid) as totalnumber
+from locationpoplulation
+group by zipcode)
+
+
+select c1.zipcode,c1.population,c1.city,c2.totalnumber
+from cte c1
+left join cte2 c2 on c1.zipcode=c2.zipcode
+order by totalnumber DESC
+limit 10;
+
+
+
+######### The least number of customers present in each zipcode and the poplulation with respect to that zipcode
+
+with cte as
+(select distinct zipcode,population,city
+from locationpoplulation
+order by population 
+),
+
+cte2 as 
+ (select zipcode ,count(customerid) as totalnumber
+from locationpoplulation
+group by zipcode)
+
+
+select c1.zipcode,c1.population,c1.city,c2.totalnumber
+from cte c1
+left join cte2 c2 on c1.zipcode=c2.zipcode
+order by totalnumber 
+limit 10;
+
+########## Number of Zipcodes associated with each city
+
+
+select city,count(zipcode) as totalzipcodes
+from locationpoplulation
+group by city
+order by totalzipcodes DESC;
+
+###### Number of customers assocaited with each city ordered by city in ascending order to check the number of customers. This is to check if my queires are right. This is was data checking.
+with cte as 
+(select  zipcode,count(customerid) as totalnumber
+from locationpoplulation
+group by zipcode)
+
+select distinct  c.zipcode,c.totalnumber,city
+from cte c
+inner join locationpoplulation pl on c.zipcode=pl.zipcode
+order by city;
+
+
+
+select count(distinct city) as totalcities
+from customerlocation;
+
+
+
+
+######################################################### End of customerpopulation and customerlocation tables##########################################################################################
+
+
+
+
+
+######## Exploring customerservices table#######
+
+
+
+select * from customerservices; 
+
+############# Created a view called customerservice1
+create view customerservice1 as
+select customerid,referredafriend,numberofreferrals,tenureinmonths,offer,phoneservice
+from customerservices 
+where yearlyquarter='Q3';
+
+
+select * from customerservice1;
+
+############### customers who have referred or no refered 
+select count(customerId)
+from customerservice1
+where referredafriend='No';
+
+############### The number of customers based on the number of referrals
+select numberofreferrals,count(customerid) as totalnumber
+from customerservice1 
+group by numberofreferrals
+order by numberofreferrals DESC;
+
+####### Grouping the cutomrs based on the number of months in tenure 
+
+
+select tenureinmonths,count(customerid) as totalnumber
+from customerservice1
+group by tenureinmonths
+order by  tenureinmonths DESC
+limit 10;
+
+####### Grouping the customers based on the offeres 
+
+select offer,count(customerid) as totalnumber
+from customerservice1
+group by offer
+order by offer;
+
+###### Grouping tne customrs based on whether they are using the phone service or not
+
+select phoneservice,count(customerid) as totalnumber
+from customerservice1
+group by phoneservice;
+
+
+################## A view is created based on the various monthly payments#############
+create view customerservice2 as
+select customerID,paymentMethod,TotalLongDistanceCharges,AvgMonthlyLongDistanceCharges,MonthlyCharge,Totalcharges,TotalRefunds,TotalExtraDataCharges,TotalRevenue
+from customerServices;
+
+select * from customerservice2;
+
+
+####### Grouping customer based on their Payment methods
+select paymentMethod,count(customerId) as totalnumber
+from customerservice2
+group by paymentMethod
+order by totalnumber DESC;
+
+select max(TotalRevenue) 
+from customerservice2;
+
+############# A case statement to see which customers comes under which range of the total revenue #####
+select customerID,TotalRevenue,
+case
+when totalRevenue >10000 then 'High'
+When totalRevenue >=5000 then 'Medium'
+when totalRevenue <5000 then 'Low'
+else 'Extremetly Low' 
+end as Revenue_classification
+from customerservice2;
+
+
+######## The number of customers present in each range of totalrevenue
+with TotalReveueRange as
+(
+select customerID,TotalRevenue,
+case
+when totalRevenue >10000 then 'High'
+When totalRevenue >=5000 then 'Medium'
+when totalRevenue <5000 then 'Low'
+else 'Extremetly Low' 
+end as Revenue_classification
+from customerservice2)
+
+select revenue_classification,count(customerid) as totalnumber
+from TotalReveueRange
+group by revenue_classification;
+
+##### Sum and average  of the revenue
+
+select round(sum(totalrevenue),2) as sumtotalrevenue,round(avg(totalrevenue),2) as avgerage
+from customerservice2;
+ 
+  
+ 
+ ####### Cusotmer with maximum total charges 
+select customerid,totalrevenue as maximum
+from customerservice2
+where totalrevenue in (select max(totalrevenue)
+                        from customerservice2);
+                        
+                        
+                        
+  select customerid,totalrevenue as maximum
+from customerservice2
+where totalrevenue in (select min(totalrevenue)
+                        from customerservice2);                      
+                        
+############ The number of customers present in each range and the range which are high,medium and low
+
+with TotalchargesRange as
+(
+select customerID,Totalcharges,
+case
+when totalcharges > 6000 then 'High'
+When totalcharges <6000 and totalcharges>3000  then'Medium'
+when totalcharges <3000 then 'Low' 
+end as totalcharges_classification
+from customerservice2
+)
+
+select totalcharges_classification,count(customerid) as totalnumber
+from TotalchargesRange
+group by totalcharges_classification
+order by totalnumber;
+
+########### Sum and avg of total charges 
+select round(sum(totalcharges),2) as sumtotalcharges,round(avg(totalcharges),2) as avgerage 
+from customerservice2;
+
+
+####### Cusotmer with maximim total charges 
+select customerid,totalcharges as maximum
+from customerservice2
+where totalcharges in (select max(totalcharges)
+                        from customerservice2);
+
+
+
+############ Cusotmer with minimun total charges
+select customerid,totalcharges as minimum
+from customerservice2
+where totalcharges in (select min(totalcharges)
+                        from customerservice2);
+                        
+                        
+                        
+select count(customerid) as totalnumber
+from customerservice2
+where totalrefunds=0;
+
+select  round(sum(totalrefunds),2) as sum, round(avg(totalrefunds),2)
+from customerservice2;
+
+
+############## customer with max refund###################################
+
+select customerid,totalrefunds as maximum
+from customerservice2
+where totalrefunds in (select max(totalrefunds)
+                        from customerservice2);
+                        
+                        
+###### customer with min refund###############################################
+with Totalrefundsvalues  as 
+(
+select customerid,totalrefunds as minimum
+from customerservice2
+where totalrefunds not in (select min(totalrefunds)
+                        from customerservice2))
+                        
+select customerid ,minimum
+from Totalrefundsvalues
+where minimum in (select min(minimum)
+                    from totalrefundsvalues);
+                    
+                    
+                    
+                    
+########### To find the sum of total extra data charges################################# 
+
+
+select round(sum(totalextradatacharges),2) as sum , round(avg(totalextradatacharges),2) as average
+from customerservice2;
+
+
+######### customer who has the highes extra data charge########################
+
+select totalextradatacharges as maximum,count(customerid) as totalnumber
+from customerservice2
+where totalextradatacharges in (select max(totalextradatacharges)
+                        from customerservice2)
+group by maximum;
+
+
+##### Customer who has the lowest data charge###############################
+
+with Totalextradatacharges  as 
+(
+select customerid,totalextradatacharges as minimum
+from customerservice2
+where totalextradatacharges not in (select min(totalextradatacharges)
+                        from customerservice2))
+                        
+select minimum,count(customerid)as totalnumber
+from totalextradatacharges
+where minimum in (select min(minimum)
+                    from totalextradatacharges)
+group by minimum;
+                    
+                    
+ #### The number of customers who paid extra chagers ############################                   
+      select count(customerid) as totalnumber
+from customerservice2
+where totalrefunds!=0;
+      
+      
+      
+      
+
+select * from customerservice2;
+
+
+##### Find the number of custoemrs who have totalLong distance charges zero.alter
+
+select count(customerid) as totalnumebr
+from customerservice2
+where TotalLongDistanceCharges =0;
+
+
+
+########### Find the sum and the average of the coulmn Long Distance chargers###################
+
+select round(sum(totallongdistancecharges),2) as sum , round(avg(totallongdistancecharges),2) as average
+from customerservice2;
+
+
+
+############## The customer with the maximum long distance charge############################
+select customerid,totallongdistancecharges as maximum
+from customerservice2
+where totallongdistancecharges in (select max(totallongdistancecharges)
+                        from customerservice2);
+
+####################### The customer with the minimum long distance charge################################
+
+with totallongdistancechargesvalues  as 
+(
+select customerid,totallongdistancecharges as minimum
+from customerservice2
+where totallongdistancecharges not in (select min(totalrefunds)
+                        from customerservice2))
+                        
+select customerid ,minimum
+from totallongdistancechargesvalues
+where minimum in (select min(minimum)
+                    from totallongdistancechargesvalues);
+                    
+                    
+    #############   select sum and average of monthly charges###########################
+    
+    select round(sum(monthlycharge),2) as sum , round(avg(monthlycharge),2) as average
+from customerservice2;
+
+
+########## To find the max and the minimum customers of monthly charges #################################
+
+
+select customerid,monthlycharge as maximum
+from customerservice2
+where monthlycharge in (select max(monthlycharge)
+                        from customerservice2);
+
+                    
+       ############Find the minimum  customers of monthly charges  
+       
+       select customerid,monthlycharge as minimum
+from customerservice2
+where monthlycharge in (select min(monthlycharge)
+                        from customerservice2);
+                        
+                        
+
+#select sum and average of avgmonthlylongdistancecharges charges
+    
+    select round(sum(avgmonthlylongdistancecharges),2) as sum , round(avg(avgmonthlylongdistancecharges),2) as average
+from customerservice2;
+
+
+########## To find the max and the minimum customers of Avg monthly long distance charges 
+
+
+select customerid,avgmonthlylongdistancecharges as maximum
+from customerservice2
+where avgmonthlylongdistancecharges in (select max(avgmonthlylongdistancecharges)
+                        from customerservice2);
+
+                    
+############Find the minimum  customers of monthly charges  
+       
+   with avgmonthlylongdistancechargesvalues  as 
+(
+select customerid,avgmonthlylongdistancecharges as minimum
+from customerservice2
+where avgmonthlylongdistancecharges not in (select min(avgmonthlylongdistancecharges)
+                        from customerservice2))
+                        
+select customerid ,minimum
+from avgmonthlylongdistancechargesvalues
+where minimum in (select min(minimum)
+                    from avgmonthlylongdistancechargesvalues);
+                    
+                    
+                    
+                    
+select * from customerservices;
+
+
+create view customerservice3 as
+select customerid,multiplelines,InternetService,InternetType,AvgMonthlyGBDownload,OnlineSecurity,OnlineBackup,DeviceProtectionPlan,PremiumTechSupport,StreamingTV,StreamingMovies,StreamingMusic,UnlimitedData,Contract,PaperlessBilling
+from customerservices;
+
+select * from customerservice3;
+
+
+select multiplelines,count(customerid) as total_number
+from customerservice3
+group by multiplelines;
+
+
+select InternetService,count(customerid) as total_number
+from customerservice3
+group by InternetService;
+
+
+select InternetType,count(customerid) as total_number
+from customerservice3
+group by InternetType
+order by total_number DESC;
+
+select OnlineSecurity,count(customerid) as total_number
+from customerservice3
+group by OnlineSecurity ;
+
+select OnlineBackup,count(customerid) as total_number
+from customerservice3
+group by OnlineBackup;
+
+select DeviceProtectionPlan,count(customerid) as total_number
+from customerservice3
+group by DeviceProtectionPlan;
+
+select PremiumTechSupport,count(customerid) as total_number
+from customerservice3
+group by PremiumTechSupport;
+
+select StreamingTV,count(customerid) as total_number
+from customerservice3
+group by StreamingTV;
+
+
+select StreamingMovies,count(customerid) as total_number
+from customerservice3
+group by StreamingMovies;
+
+select StreamingMusic,count(customerid) as total_number
+from customerservice3
+group by StreamingMusic;
+
+
+select UnlimitedData,count(customerid) as total_number
+from customerservice3
+group by UnlimitedData;
+
+
+select PaperlessBilling,count(customerid) as total_number
+from customerservice3
+group by PaperlessBilling;
+
+
+select Contract,count(customerid) as total_number
+from customerservice3
+group by Contract
+order by total_number DESC;
+
+
+with AvgMonthlyGBDownloaded as
+(
+select customerID, AvgMonthlyGBDownload,
+case
+when  AvgMonthlyGBDownload >=60 then 'High'
+When  AvgMonthlyGBDownload <60 and  AvgMonthlyGBDownload>30  then'Medium'
+when  AvgMonthlyGBDownload <=30 then 'Low'
+else 'Extremetly Low' 
+end as AvgMonthlyGBDownloaded_classification
+from customerservice3
+)
+
+select AvgMonthlyGBDownloaded_classification,count(customerid) as totalnumber
+from AvgMonthlyGBDownloaded
+group by AvgMonthlyGBDownloaded_classification;
+
+select avgmonthlygbdownload,count(customerid) as totalnumber
+from customerservice3
+where avgmonthlygbdownload=0;
+
+  with avgmonthlygbdownloadvalues  as 
+(
+select customerid,avgmonthlygbdownload as minimum
+from customerservice3
+where avgmonthlygbdownload not in (select min(avgmonthlygbdownload)
+                        from customerservice3))
+                        
+select customerid ,minimum
+from avgmonthlygbdownloadvalues
+where minimum in (select min(minimum)
+                    from avgmonthlygbdownloadvalues);
+                    
+ select round(sum(avgmonthlygbdownload),2) as sum , round(avg(avgmonthlygbdownload),2) as average
+from customerservice3;
+
+
+######################################Finally Down with Customer Service table#####################################################
+
+
+#################################Exploring the Customer Status #######################
+
+select * from customerstatus;
+
+select customerstatus,count(customerstatus) as totalnumber
+from customerstatus
+group by customerstatus;
+
+create view customerstatus1 as
+select customerid,statisfactionscore,customerstatus,churnlabel,churnvalue,churnscore,cltv,churncategory,churnreason,
+case 
+when cltv >=2000 and cltv <=2500 then 'CLTV is from 2000-2500'
+when cltv >=2501 and cltv <=3000 then 'CLTV is from 2501-3000'
+when cltv >=3001 and cltv <=3500 then 'CLTV is from 3001-3500'
+when cltv >=3501 and cltv <=4000 then 'CLTV is from 3501-4000'
+when cltv >=4001 and cltv <=4500 then 'CLTV is from 4001-4500'
+when cltv >=4501 and cltv <=5000 then 'CLTV is from 4501-5000'
+when cltv >=5001 and cltv <=5500 then 'CLTV is from 5001-5500'
+when cltv >=5501 and cltv <=6000 then 'CLTV is from 5500-6000'
+when cltv >=6001 and cltv <=6500 then 'CLTV is from 6000-6500'
+when cltv >=6501 and cltv <=7000 then 'CLTV is from 6501-7000'
+else 'not in the range'
+end CLTV_RANGE,
+case 
+when churnscore >=0 and churnscore <=10 then 'churnscore from 1-10'
+when churnscore >=11 and churnscore <=20 then 'churnscore from 11-20'
+when churnscore >=21 and churnscore <=30 then 'churnscore from 21-30'
+when churnscore >=31 and churnscore <=40 then 'churnscore from 31-40'
+when churnscore >=41 and churnscore <=50 then 'churnscore is from 41-50'
+when churnscore >=51 and churnscore <=60 then 'churnscore is from 51-60'
+when churnscore >=61 and churnscore <=70 then 'churnscore is from 61-70'
+when churnscore >=71 and churnscore <=80 then 'churnscore is from 71-80'
+when churnscore >=81 and churnscore <=90 then 'churnscore is from 81-90'
+when churnscore >=81 and churnscore <=90 then 'churnscore is from 81-90'
+when churnscore >=91 and churnscore <=100 then 'churnscore is from 81-90'
+else 'not in the range'
+end churnscorerange
+from  customerstatus;
+
+
+
+
+
+
+select * from customerstatus1;
+
+select customerstatus,count(customerid) as totalnumber
+from customerstatus1
+group by customerstatus
+order by totalnumber DESC;
+
+
+select churnscore,count(customerid) as total_number
+from customerstatus
+group by churnscore
+order by total_number DESC;
+
+select cltv,count(customerid) as totalcount
+from customerstatus1
+where customerstatus='stayed'
+group by cltv
+order by totalcount DESC;
+
+select churnreason,count(customerid) as totalcount
+from customerstatus1
+where customerstatus='churned'
+group by churnreason
+order by totalcount DESC
+limit 10;
+
+select churncategory,count(customerid) as totalcount
+from customerstatus1
+where customerstatus='churned'
+group by churncategory
+order by totalcount DESC
+limit 10;
+
+
+select statisfactionscore ,count(customerid) as totalcount
+from customerstatus
+group by statisfactionscore
+order by statisfactionscore DESC;
+
+
+
+############## Done with customerstatus table################
+
+
+######### Now lets start analysis of customerstatus with each table#################
+
+
+################### Analysis customerstatus and cusotmerdemographics withrespect to customer churn#################
+select * from customerdemographics;
+select * from customerstatus1;
+with cte1 as 
+(select cs.customerid,cs.statisfactionscore, cs.churncategory,cs.churnreason,cs.cltv_range,cd.gender,cd.under30,cd.seniorcitizen
+from customerstatus1 cs
+left join customerdemographics cd on cs.customerid=cd.customerid
+where customerstatus='churned')
+
+
+select gender,count(customerid) as totalcount
+from cte1
+where SeniorCitizen='No' and Under30='No'
+group by gender;
+
+with cte1 as
+(select cs.customerid,cd.dependents,cd.numberofDependents,cd.gender,cs.churnreason
+from customerstatus cs
+left join customerdemographics cd on cs.customerid=cd.customerid
+where dependents='Yes' and customerstatus='churned')
+
+
+select churnreason,count(customerid) as totalnumber
+from cte1
+group by churnreason
+order by totalnumber DESC;
+
+
+
+with cte1 as
+(select cs.customerid,cd.dependents,cd.numberofDependents,cd.gender,cs.churnreason
+from customerstatus cs
+left join customerdemographics cd on cs.customerid=cd.customerid
+where dependents='Yes' and customerstatus='churned')
+
+
+select customerid,gender,churnreason,numberofdependents 
+from cte1
+order by numberofdependents DESC;
+
+
+select count(cd.customerid) as tc
+from customerdemographics cd
+left join customerstatus1 cs on cd.customerid=cs.customerid
+where customerstatus='churned' and married='yes';
+
+
+with cte1 as
+(
+ select cs.customerid,cs.statisfactionscore, cs.churncategory,cs.churnreason,cs.cltv_range,cd.married,cd.gender,cd.under30,cd.seniorcitizen
+from customerstatus1 cs
+left join customerdemographics cd on cs.customerid=cd.customerid
+where customerstatus='churned' and married='Yes')
+
+
+select gender,count(customerid) as totalcount
+from cte1
+where SeniorCitizen='No' and Under30='No'
+group by gender;
+
+
+################################# Done with customerdemographics##################################
+
+###############Now analysis with customerlocation and customerstatus################################
+
+
+select * from locationpoplulation;
+
+select  * from customerlocation;
+
+select * from customerstatus1;
+
+
+select latitude ,count(customerid) as tc
+from customerlocation
+group by latitude ;
+with cte1 as 
+(select lp.customerid,lp.city,lp.state,lp.zipcode,cs.churnscore,cs.churncategory,cs.churnreason,cs.cltv_range
+from customerstatus1 cs
+left join locationpoplulation lp on lp.customerid=cs.customerid
+where customerstatus='churned'),
+
+cte2 as 
+(select zipcode,count(customerid) as totalcount,churncategory
+from cte1
+group by zipcode,churncategory
+order by totalcount DESC)
+
+select distinct  c.zipcode,c.totalcount,c.churncategory, lp.city,lp.population
+from cte2 c
+left join locationpoplulation lp on c.zipcode=lp.zipcode
+order by c.totalcount DESC
+limit 10;
+
+######################## End of analysis with customer location and population#############
+
+
+
+########### Now analysis with customerservices######################
+
+select *  from customerservice1;
+select *  from customerservice2;
+select *  from customerservice3;
+select * from customerstatus1;
+
+
+with cte1 as 
+(select cu.customerid ,cu.referredafriend ,cu.numberofreferrals ,c.churncategory,c.churnreason
+from customerstatus1 c
+left join customerservice1 cu on c.customerid=cu.customerid
+where customerstatus='Churned' )
+
+select referredafriend,count(customerid) as tc
+from cte1
+group by referredafriend;
+
+with cte1 as
+(select cu.customerid ,cu.referredafriend ,cu.numberofreferrals ,c.churncategory,c.churnreason
+from customerstatus1 c
+left join customerservice1 cu on c.customerid=cu.customerid
+where customerstatus='Churned' and referredafriend='Yes'
+order by cu.numberofreferrals DESC)
+
+
+select churncategory ,count(customerid) as totalcount
+from cte1
+group by churncategory
+order by totalcount DESC;
+
+
+with cte1 as
+(select cu.customerid ,cu.phoneservice ,cu.numberofreferrals ,c.churncategory,c.churnreason
+from customerstatus1 c
+left join customerservice1 cu on c.customerid=cu.customerid
+where customerstatus='Churned'
+order by cu.numberofreferrals DESC)
+
+select phoneservice ,count(customerid) as totalcount
+from cte1
+group by phoneservice
+order by totalcount DESC; 
+
+with cte1 as
+(select cu.customerid ,cu.phoneservice ,cu.numberofreferrals ,c.churncategory,c.churnreason
+from customerstatus1 c
+left join customerservice1 cu on c.customerid=cu.customerid
+where customerstatus='Churned'
+order by cu.numberofreferrals DESC)
+
+select phoneservice ,count(customerid) as totalcount
+from cte1
+group by phoneservice
+order by totalcount DESC;
+
+
+
+select cu.customerid ,cu.tenureinmonths ,c.churncategory,c.churnreason,c.cltv_range,c.churnscorerange,c.cltv
+from customerstatus1 c
+left join customerservice1 cu on c.customerid=cu.customerid
+where customerstatus='Churned' and c.cltv>4501
+order by tenureinmonths DESC;
+
+select tenureinmonths,count(customerid) as tc
+from customerservice1 cu
+left join customerstatus1 c on c.customerid=cu.customerid
+where customerstatus='Churned'
+group by tenureinmonths
+order by  tenureinmonths DESC
+limit 5;
+
+select churnreason
+from customerstatus1
+where statisfactionscore=1 and customerstatus='churned';
+
+
+
+
+######################################### Combining all the tables with customer status ######################
+
+################### Found out the regions in which churn is happenig the most and the reeson for churn 
+
+with cte1 as 
+(select lp.customerid,lp.city,lp.state,lp.zipcode,cs.churnscore,cs.churncategory,cs.churnreason,cs.cltv_range
+from customerstatus1 cs
+left join locationpoplulation lp on lp.customerid=cs.customerid
+where customerstatus='churned'),
+
+cte2 as 
+(select zipcode,count(customerid) as totalcount,churncategory
+from cte1
+group by zipcode,churncategory
+order by totalcount DESC)
+
+select distinct  c.zipcode,c.totalcount,c.churncategory, lp.city,lp.population
+from cte2 c
+left join locationpoplulation lp on c.zipcode=lp.zipcode
+order by c.totalcount DESC
+limit 10;
+
+
+############ To find the churn reason for score 1
+select churnreason,count(customerid) as totalcount
+from customerstatus1
+where customerstatus='Churned' and statisfactionscore=1
+group by churnreason
+order by totalcount DESC;
+
+
+
+select c.churnreason,count(c.customerid) as totalcount
+from customerstatus1 c
+join customerdemographics cd on cd.customerid=c.customerid
+where customerstatus='Churned' and statisfactionscore=1 and cd.SeniorCitizen='No'
+group by churnreason
+order by totalcount DESC;
+
+
+############ To find the average gb downloaded by churned customers  using dsl,fiber optics 
+
+
+select c.internettype ,count(c.customerid) as total_count, avg(avgmonthlygbdownload) as total_averager,cs.customerstatus
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid
+group by c.internettype, cs.customerstatus 
+order by  cs.customerstatus ;
+
+select c.internettype ,count(c.customerid) as total_count, avg(avgmonthlygbdownload) as total_averager
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid
+where customerstatus='stayed'
+group by c.internettype ;
+
+select internettype ,count(c.customerid) as total_count, avg(avgmonthlygbdownload) as total_averager
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid
+where customerstatus='Stayed'
+group by c.internettype ;
+
+select c.Internetservice,count(c.customerid) as tc ,cs.churnreason
+ from customerservice3 c
+join customerstatus1 cs on cs.customerid=c.customerid 
+where cs.customerstatus='churned' and Internetservice='Yes'
+group by c.internetservice,cs.churnreason
+order by tc DESC;
+
+select * from customerservice1;
+
+select c.phoneservice,count(c.customerid) as tc ,cs.churnreason
+ from customerservice1 c
+join customerstatus1 cs on cs.customerid=c.customerid 
+where cs.customerstatus='churned' and c.Phoneservice='Yes'
+group by c.phoneservice,cs.churnreason
+order by tc DESC;
+
+
+select c.contract ,count(c.customerid) as totalcount
+from customerservice3 c
+join customerstatus1 cs on cs.customerid=c.customerid 
+where customerstatus='Churned'
+group by contract;
+
+
+
+select churnreason,count(customerid) as total_count 
+from customerstatus1
+where customerstatus='Churned'  and statisfactionscore in(1,2)
+group by churnreason
+order by total_count DESC;
+
+
+select c.internettype,count(c.customerid) as total_count
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid 
+where customerstatus='Churned'
+group by c.internettype;
+
+
+select c.onlinesecurity,count(c.customerid) as total_count,cs.statisfactionscore
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid 
+where customerstatus='Churned'
+group by c.onlinesecurity ,cs.statisfactionscore
+order by c.onlinesecurity DESC;
+
+
+select c.internetservice,count(c.customerid) as total_count,cs.statisfactionscore
+from customerservice3 c
+join customerstatus1 cs on c.customerid=cs.customerid 
+where customerstatus='Churned'
+group by c.internetservice ,cs.statisfactionscore
+order by c.internetservice DESC ;
+
+select c.phoneservice,count(c.customerid) as total_count,cs.statisfactionscore
+from customerservice1 c
+join customerstatus1 cs on c.customerid=cs.customerid 
+where customerstatus='Churned'
+group by  c.phoneservice ,cs.statisfactionscore
+order by  c.phoneservice DESC ;
